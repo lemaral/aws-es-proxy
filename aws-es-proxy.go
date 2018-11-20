@@ -132,7 +132,7 @@ func (p *proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	req, err := http.NewRequest(r.Method, ep.String(), r.Body)
 	if err != nil {
-		log.Fatalln("error creating new request. ", err.Error())
+		log.Println("error creating new request. ", err.Error())
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -151,7 +151,7 @@ func (p *proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Fatalln(err.Error())
+		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -160,6 +160,7 @@ func (p *proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		// AWS credentials expired, need to generate fresh ones
 		if resp.StatusCode == 403 {
 			p.credentials = nil
+			defer resp.Body.Close()
 			return
 		}
 	}
@@ -172,7 +173,7 @@ func (p *proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Send response back to requesting client
 	body := bytes.Buffer{}
 	if _, err := io.Copy(&body, resp.Body); err != nil {
-		log.Fatalln(err.Error())
+		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 	w.WriteHeader(resp.StatusCode)
