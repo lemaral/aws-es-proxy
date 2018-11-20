@@ -1,4 +1,4 @@
-package: github.com/abutaha/aws-es-proxy
+package: github.com/lemaral/aws-es-proxy
 license: Apache
 owners:
 - name: Muslim AbuTaha
